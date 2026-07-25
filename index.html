@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>SYSTEM HACKED</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #000; overflow: hidden; height: 100vh; width: 100vw; }
+  canvas { display: block; }
+  #warning {
+    position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    color: #f00; font-family: 'Courier New', monospace; font-size: 28px;
+    text-align: center; z-index: 100; display: none;
+    text-shadow: 0 0 20px #f00;
+  }
+  #warning .sub { font-size: 16px; margin-top: 15px; color: #ff0; }
+  #countdown { font-size: 60px; margin-top: 20px; color: #fff; }
+  #overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.85); z-index: 99; display: flex;
+    justify-content: center; align-items: center;
+    color: #0f0; font-family: 'Courier New', monospace; font-size: 22px;
+    cursor: pointer;
+  }
+  #overlay span { animation: blink 1s infinite; }
+  @keyframes blink { 0%,50% { opacity:1; } 51%,100% { opacity:0; } }
+</style>
+</head>
+<body>
+<div id="overlay"><span>▶ 点击此处进入系统 [ ENTER ]</span></div>
+<div id="warning">
+  <div>⚠ CRITICAL SYSTEM FAILURE ⚠</div>
+  <div class="sub">检测到未授权访问...</div>
+  <div class="sub">正在下载核心文件...</div>
+  <div id="countdown">3</div>
+  <div class="sub" id="hack-text"></div>
+</div>
+<canvas id="canvas"></canvas>
+<script>
+var overlay = document.getElementById('overlay');
+overlay.addEventListener('click', startHack);
+
+function startHack() {
+  overlay.style.display = 'none';
+  startMatrix();
+  setTimeout(showWarning, 5000);
+}
+
+// ========== 数字雨 ==========
+function startMatrix() {
+  var canvas = document.getElementById('canvas');
+  var ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  var chars = '01ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@#$%^&*()_+-=[]{}|;:,.<>?/';
+  var fontSize = 16;
+  var columns = Math.floor(canvas.width / fontSize);
+  var drops = [];
+  for (var i = 0; i < columns; i++) drops[i] = Math.random() * -100;
+
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  function draw() {
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.font = fontSize + 'px monospace';
+
+    for (var i = 0; i < drops.length; i++) {
+      var text = chars[Math.floor(Math.random() * chars.length)];
+
+      // 头部亮绿色，尾部暗绿色
+      var y = drops[i] * fontSize;
+      if (y < canvas.height) {
+        ctx.fillStyle = '#0f0';
+        ctx.fillText(text, i * fontSize, y);
+
+        // 在上一行画暗色覆盖（制造拖尾）
+        ctx.fillStyle = '#003300';
+        ctx.fillText(chars[Math.floor(Math.random() * chars.length)], i * fontSize, y - fontSize);
+      }
+
+      if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+        drops[i] = 0;
+      }
+      drops[i]++;
+    }
+  }
+  setInterval(draw, 50);
+}
+
+// ========== 警告画面 ==========
+function showWarning() {
+  var w = document.getElementById('warning');
+  w.style.display = 'block';
+
+  var texts = [
+    '正在绕过防火墙...',
+    '正在破解 root 权限...',
+    '正在注入 payload...',
+    '正在提取通讯录...',
+    '正在复制照片...',
+    '正在上传到服务器...',
+    '访问被拒绝！'
+  ];
+  var idx = 0;
+  var hackText = document.getElementById('hack-text');
+
+  var textTimer = setInterval(function() {
+    if (idx < texts.length) {
+      hackText.innerHTML += '<br>' + texts[idx];
+      idx++;
+    } else {
+      clearInterval(textTimer);
+    }
+  }, 600);
+
+  // 倒数
+  var count = 3;
+  var cd = document.getElementById('countdown');
+  var cdTimer = setInterval(function() {
+    count--;
+    if (count > 0) {
+      cd.textContent = count;
+    } else if (count === 0) {
+      cd.textContent = '💀';
+      cd.style.color = '#f00';
+      clearInterval(cdTimer);
+      setTimeout(function() {
+        w.innerHTML = '<div style="font-size:36px;color:#0f0;text-shadow:0 0 30px #0f0;">😎 哈哈哈，骗你的！</div>'
+          + '<div style="font-size:18px;color:#888;margin-top:20px;">这只是 HTML + JavaScript 写的特效</div>'
+          + '<div style="font-size:14px;color:#666;margin-top:10px;">想学吗？去找元宝教你写！</div>';
+      }, 1500);
+    }
+  }, 1000);
+}
+</script>
+</body>
+</html>
+
